@@ -1,0 +1,8 @@
+.github
+.parcel-cache
+src
+.eslintrc.cjs
+.prettierrc.cjs
+jest.config.js
+decs.d.ts
+tsconfig.json
