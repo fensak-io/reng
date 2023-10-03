@@ -8,11 +8,17 @@
   "bugs": {
     "url": "https://github.com/fensak-io/reng/issues"
   },
+  "type": "module",
   "source": "src/index.ts",
   "exports": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
+  "targets": {
+    "module": {
+      "context": "node",
+      "optimize": true
+    }
+  },
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
@@ -29,9 +35,12 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@parcel/config-default": "2.9.3",
     "@parcel/packager-ts": "2.9.3",
+    "@parcel/transformer-typescript-tsc": "2.9.3",
     "@parcel/transformer-typescript-types": "2.9.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/babel__core": "^7.20.2",
     "@types/node": "^20.8.2",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",

@@ -1,22 +1,22 @@
 // Copyright (c) Fensak, LLC.
 // SPDX-License-Identifier: AGPL-3.0-or-later OR BUSL-1.1
 
-import "JS-Interpreter/interpreter.js";
-import * as acorn from "JS-Interpreter/acorn.js";
 // The use of globalThis in here is gross, but it's an artifact of JS-Interpreter being a library designed for use in
 // the browser. As such, we have to pollute the globalThis environment to use it properly.
-globalThis.acorn = acorn;
-
-import { Octokit } from "@octokit/rest";
-
-import { IPatch } from "./patch_types.ts";
-
 declare global {
   // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
   var Interpreter: any;
   // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
   var acorn: any;
 }
+
+import "JS-Interpreter/interpreter.js";
+import * as acorn from "JS-Interpreter/acorn.js";
+globalThis.acorn = acorn;
+
+import { Octokit } from "@octokit/rest";
+
+import { IPatch } from "./patch_types.ts";
 
 // Max time in milliseconds for the user defined rule to run. Any UDR functions that take longer than this will throw an error.
 const maxUDRRuntime = 5000;
