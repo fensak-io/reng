@@ -9,10 +9,10 @@
   </a>
   <br/>
   <a href="https://github.com/fensak-io/reng/releases/latest">
-    <img alt="latest release" src="https://img.shields.io/github/v/release/fensak-io/fensak?style=for-the-badge">
+    <img alt="latest release" src="https://img.shields.io/github/v/release/fensak-io/reng?style=for-the-badge">
   </a>
   <a href="https://github.com/fensak-io/reng/actions/workflows/lint-test-release.yml?query=branch%3Amain">
-    <img alt="main branch CI" src="https://img.shields.io/github/actions/workflow/status/fensak-io/fensak/lint-test-release.yml?branch=main&logo=github&label=CI&style=for-the-badge">
+    <img alt="main branch CI" src="https://img.shields.io/github/actions/workflow/status/fensak-io/reng/lint-test-release.yml?branch=main&logo=github&label=CI&style=for-the-badge">
   </a>
   <a href="https://github.com/fensak-io/reng/blob/main/LICENSE">
     <img alt="LICENSE" src="https://img.shields.io/badge/LICENSE-AGPL_3.0_OR_BUSL_1.1-orange?style=for-the-badge">
