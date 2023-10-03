@@ -14,7 +14,7 @@
     "lint": "eslint .",
     "test": "jest",
     "build": "parcel build",
-    "bpub": "pnpm build && npm publish --access public"
+    "release": "semantic-release"
   },
   "dependencies": {
     "@babel/core": "^7.23.0",
@@ -37,6 +37,7 @@
     "parcel": "^2.9.3",
     "prettier": "3.0.3",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "semantic-release-cli": "^5.4.4"
   }
 }

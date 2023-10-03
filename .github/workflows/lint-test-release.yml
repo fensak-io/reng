@@ -1,0 +1,78 @@
+name: lint-test-release
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  # Run linter and tests against JS, TS, and YAML files
+  linttest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4.0.0
+
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+
+      - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: lint
+        run: pnpm lint
+
+      - name: test
+        run: pnpm test
+
+      - name: report
+        uses: mikepenz/action-junit-report@75b84e78b3f0aaea7ed7cf8d1d100d7f97f963ec # v4.0.0
+        if: always()
+        with:
+          report_paths: "junit.xml"
+          check_name: "test report"
+
+  # Cut a release tag based on conventional-commits and semantic-release, and publish it.
+  release:
+    runs-on: ubuntu-latest
+    needs: linttest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+    steps:
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4.0.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        with:
+          node-version: "lts/*"
+
+      - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+
+      - name: install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: build
+        run: pnpm build
+
+      - name: release
+        run: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
