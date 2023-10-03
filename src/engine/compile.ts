@@ -31,10 +31,9 @@ export function compileRuleFn(
   srcLang?: RuleFnSourceLang,
 ): string {
   if (!srcLang || srcLang == RuleFnSourceLang.ES5) {
-    const transformed = babel.transform(ruleFn, {
+    return babelTransform(ruleFn, {
       presets: [["babel-preset-minify", minifyCfg]],
     });
-    return transformed.code;
   }
 
   if (srcLang == RuleFnSourceLang.Typescript) {
@@ -42,17 +41,30 @@ export function compileRuleFn(
     // So here, we just take care of compiling to ES6.
     // We also remove any lines surrounding the keyword "fensak remove-start" and "fensak remove-end" to support type imports.
     ruleFn = removeCommentSurroundedKeyword(ruleFn);
-    ruleFn = babel.transform(ruleFn, {
+    ruleFn = babelTransform(ruleFn, {
       presets: ["@babel/preset-typescript"],
       filename: "rule.ts",
-    }).code;
+    });
   }
 
   // ruleFn is assumed to be in ES6 at this point.
-  const transformed = babel.transform(ruleFn, {
+  return babelTransform(ruleFn, {
     presets: ["@babel/preset-env", ["babel-preset-minify", minifyCfg]],
   });
-  return transformed.code;
+}
+
+function babelTransform(code: string, opts: babel.TransformOptions): string {
+  const transformed = babel.transform(code, opts);
+  if (!transformed) {
+    throw new Error("Error compiling rule function");
+  }
+
+  const compiledCode = transformed.code;
+  if (!compiledCode) {
+    throw new Error("Error compiling rule function");
+  }
+
+  return compiledCode;
 }
 
 function removeCommentSurroundedKeyword(ruleFn: string): string {

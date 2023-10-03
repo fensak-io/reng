@@ -28,15 +28,24 @@ devDependencies:
   '@jest/globals':
     specifier: ^29.7.0
     version: 29.7.0
+  '@parcel/config-default':
+    specifier: 2.9.3
+    version: 2.9.3(@parcel/core@2.9.3)(typescript@5.2.2)
   '@parcel/packager-ts':
     specifier: 2.9.3
     version: 2.9.3(@parcel/core@2.9.3)
+  '@parcel/transformer-typescript-tsc':
+    specifier: 2.9.3
+    version: 2.9.3(@parcel/core@2.9.3)(typescript@5.2.2)
   '@parcel/transformer-typescript-types':
     specifier: 2.9.3
     version: 2.9.3(@parcel/core@2.9.3)(typescript@5.2.2)
   '@semantic-release/git':
     specifier: ^10.0.1
     version: 10.0.1(semantic-release@22.0.5)
+  '@types/babel__core':
+    specifier: ^7.20.2
+    version: 7.20.2
   '@types/node':
     specifier: ^20.8.2
     version: 20.8.2
@@ -2481,6 +2490,20 @@ packages:
       posthtml-parser: 0.10.2
       posthtml-render: 3.0.0
       semver: 7.5.4
+    transitivePeerDependencies:
+      - '@parcel/core'
+    dev: true
+
+  /@parcel/transformer-typescript-tsc@2.9.3(@parcel/core@2.9.3)(typescript@5.2.2):
+    resolution: {integrity: sha512-kQUts/PVFhEb9JoyJBlKvaa5qR/3bEiyZSjn8qE3S+97CUOIVun8fNxGiDPwpaPd90BgPcgU43gSAQwlY9rIMQ==}
+    engines: {node: '>= 12.0.0', parcel: ^2.9.3}
+    peerDependencies:
+      typescript: '>=3.0.0'
+    dependencies:
+      '@parcel/plugin': 2.9.3(@parcel/core@2.9.3)
+      '@parcel/source-map': 2.1.1
+      '@parcel/ts-utils': 2.9.3(typescript@5.2.2)
+      typescript: 5.2.2
     transitivePeerDependencies:
       - '@parcel/core'
     dev: true
