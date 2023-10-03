@@ -1,6 +1,9 @@
 # fensak-io/reng - Fensak Rules Engine
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/@fensak-io/reng">
+    <img alt="NPM" src="https://img.shields.io/npm/v/@fensak-io/reng.svg?style=for-the-badge">
+  </a>
   <a href="https://docs.fensak.io/docs/writing-rules/">
     <img alt="Documentation" src="https://img.shields.io/badge/docs-docs.fensak.io-blue?style=for-the-badge">
   </a>
