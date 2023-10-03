@@ -5,9 +5,9 @@ import * as nodecrypto from "crypto";
 
 import { Octokit } from "@octokit/rest";
 
-import { parseUnifiedDiff } from "./patch";
-import { IPatch, PatchOp } from "./patch_types";
-import { SourcePlatform } from "./from";
+import { parseUnifiedDiff } from "./patch.ts";
+import { IPatch, PatchOp } from "./patch_types.ts";
+import { SourcePlatform } from "./from.ts";
 
 const crypto = nodecrypto.webcrypto;
 

@@ -3,9 +3,9 @@
 
 import { expect, test } from "@jest/globals";
 
-import { PatchOp } from "./patch_types";
-import { runRule, RuleLogMode, RuleLogLevel } from "./interpreter";
-import { compileRuleFn, RuleFnSourceLang } from "./compile";
+import { PatchOp } from "./patch_types.ts";
+import { runRule, RuleLogMode, RuleLogLevel } from "./interpreter.ts";
+import { compileRuleFn, RuleFnSourceLang } from "./compile.ts";
 
 test("sanity check", async () => {
   const ruleFn = `function main(inp) {

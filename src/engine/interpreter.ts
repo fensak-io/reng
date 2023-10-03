@@ -9,7 +9,7 @@ globalThis.acorn = acorn;
 
 import { Octokit } from "@octokit/rest";
 
-import { IPatch } from "./patch_types";
+import { IPatch } from "./patch_types.ts";
 
 declare global {
   // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
