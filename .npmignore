@@ -1,6 +1,5 @@
 .github
 .parcel-cache
-src
 .eslintrc.cjs
 .prettierrc.cjs
 jest.config.cjs

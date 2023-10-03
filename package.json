@@ -19,6 +19,18 @@
       "require": "./dist/index.cjs"
     }
   },
+  "targets": {
+    "main": {
+      "includeNodeModules": [
+        "JS-Interpreter"
+      ]
+    },
+    "module": {
+      "includeNodeModules": [
+        "JS-Interpreter"
+      ]
+    }
+  },
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
@@ -30,10 +42,10 @@
     "@babel/preset-env": "^7.22.20",
     "@babel/preset-typescript": "^7.23.0",
     "@octokit/rest": "^20.0.2",
-    "JS-Interpreter": "git://github.com/NeilFraser/JS-Interpreter.git#2aa2a535989c58149f34c8586a6b2bc05d3f744a",
     "babel-preset-minify": "^0.5.2"
   },
   "devDependencies": {
+    "JS-Interpreter": "git://github.com/yorinasub17/JS-Interpreter.git#c1e9044f99041dead8c6a49a4f3784486df0fdd9",
     "@jest/globals": "^29.7.0",
     "@parcel/config-default": "2.9.3",
     "@parcel/packager-ts": "2.9.3",
