@@ -1,5 +1,21 @@
 # fensak-io/reng - Fensak Rules Engine
 
+<p align="center">
+  <a href="https://docs.fensak.io/docs/writing-rules/">
+    <img alt="Documentation" src="https://img.shields.io/badge/docs-docs.fensak.io-blue?style=for-the-badge">
+  </a>
+  <br/>
+  <a href="https://github.com/fensak-io/reng/releases/latest">
+    <img alt="latest release" src="https://img.shields.io/github/v/release/fensak-io/fensak?style=for-the-badge">
+  </a>
+  <a href="https://github.com/fensak-io/reng/actions/workflows/lint-test.yml?query=branch%3Amain">
+    <img alt="main branch CI" src="https://img.shields.io/github/actions/workflow/status/fensak-io/fensak/lint-test.yml?branch=main&logo=github&label=CI&style=for-the-badge">
+  </a>
+  <a href="https://github.com/fensak-io/reng/blob/main/LICENSE">
+    <img alt="LICENSE" src="https://img.shields.io/badge/LICENSE-AGPL_3.0_OR_BUSL_1.1-orange?style=for-the-badge">
+  </a>
+</p>
+
 This is the source code for the [Fensak](https://fensak.io) Rules Engine which drives execution of user defined rules on
 the Fensak platform.
 
