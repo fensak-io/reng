@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later OR BUSL-1.1
 
 import * as babel from "@babel/core";
+import babelPresetEnv from "@babel/preset-env";
+import babelPresetTypescript from "@babel/preset-typescript";
+import babelPresetMinify from "babel-preset-minify";
 
 const minifyCfg = {
   mangle: { exclude: "main" },
@@ -32,7 +35,7 @@ export function compileRuleFn(
 ): string {
   if (!srcLang || srcLang == RuleFnSourceLang.ES5) {
     return babelTransform(ruleFn, {
-      presets: [["babel-preset-minify", minifyCfg]],
+      presets: [[babelPresetMinify, minifyCfg]],
     });
   }
 
@@ -42,14 +45,14 @@ export function compileRuleFn(
     // We also remove any lines surrounding the keyword "fensak remove-start" and "fensak remove-end" to support type imports.
     ruleFn = removeCommentSurroundedKeyword(ruleFn);
     ruleFn = babelTransform(ruleFn, {
-      presets: ["@babel/preset-typescript"],
+      presets: [babelPresetTypescript],
       filename: "rule.ts",
     });
   }
 
   // ruleFn is assumed to be in ES6 at this point.
   return babelTransform(ruleFn, {
-    presets: ["@babel/preset-env", ["babel-preset-minify", minifyCfg]],
+    presets: [babelPresetEnv, [babelPresetMinify, minifyCfg]],
   });
 }
 
