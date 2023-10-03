@@ -1,0 +1,36 @@
+{
+  "name": "@fensak/reng",
+  "version": "0.1.0",
+  "author": "Fensak, LLC <info@fensak.io> (https://fensak.io)",
+  "license": "(AGPL-3.0-or-later OR BUSL-1.1)",
+  "description": "Fensak Rules Engine, which drives execution of user defined rules on the Fensak platform.",
+  "homepage": "https://github.com/fensak-io/reng#readme",
+  "bugs": {
+    "url": "https://github.com/fensak-io/reng/issues"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-typescript": "^7.23.0",
+    "@octokit/rest": "^20.0.2",
+    "JS-Interpreter": "git://github.com/NeilFraser/JS-Interpreter.git#2aa2a535989c58149f34c8586a6b2bc05d3f744a",
+    "babel-preset-minify": "^0.5.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/babel-core": "^6.25.8",
+    "@types/node": "^20.8.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "jest": "^29.7.0",
+    "prettier": "3.0.3",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  }
+}
