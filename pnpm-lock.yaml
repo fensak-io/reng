@@ -17,9 +17,6 @@ dependencies:
   '@octokit/rest':
     specifier: ^20.0.2
     version: 20.0.2
-  JS-Interpreter:
-    specifier: git://github.com/NeilFraser/JS-Interpreter.git#2aa2a535989c58149f34c8586a6b2bc05d3f744a
-    version: github.com/NeilFraser/JS-Interpreter/2aa2a535989c58149f34c8586a6b2bc05d3f744a
   babel-preset-minify:
     specifier: ^0.5.2
     version: 0.5.2
@@ -52,6 +49,9 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: ^6.7.2
     version: 6.7.4(eslint@8.50.0)(typescript@5.2.2)
+  JS-Interpreter:
+    specifier: git://github.com/yorinasub17/JS-Interpreter.git#c1e9044f99041dead8c6a49a4f3784486df0fdd9
+    version: github.com/yorinasub17/JS-Interpreter/c1e9044f99041dead8c6a49a4f3784486df0fdd9
   eslint:
     specifier: ^8.50.0
     version: 8.50.0
@@ -7132,8 +7132,8 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  github.com/NeilFraser/JS-Interpreter/2aa2a535989c58149f34c8586a6b2bc05d3f744a:
-    resolution: {tarball: https://codeload.github.com/NeilFraser/JS-Interpreter/tar.gz/2aa2a535989c58149f34c8586a6b2bc05d3f744a}
-    name: JS-Interpreter.git#2aa2a535989c58149f34c8586a6b2bc05d3f744a
-    version: 0.0.0
-    dev: false
+  github.com/yorinasub17/JS-Interpreter/c1e9044f99041dead8c6a49a4f3784486df0fdd9:
+    resolution: {tarball: https://codeload.github.com/yorinasub17/JS-Interpreter/tar.gz/c1e9044f99041dead8c6a49a4f3784486df0fdd9}
+    name: js-interpreter
+    version: 1.0.0
+    dev: true
