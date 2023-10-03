@@ -6,3 +6,4 @@ src
 jest.config.cjs
 decs.d.ts
 tsconfig.json
+.releaserc.yaml
