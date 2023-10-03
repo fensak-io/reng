@@ -28,12 +28,15 @@ devDependencies:
   '@jest/globals':
     specifier: ^29.7.0
     version: 29.7.0
+  '@parcel/packager-ts':
+    specifier: 2.9.3
+    version: 2.9.3(@parcel/core@2.9.3)
+  '@parcel/transformer-typescript-types':
+    specifier: 2.9.3
+    version: 2.9.3(@parcel/core@2.9.3)(typescript@5.2.2)
   '@semantic-release/git':
     specifier: ^10.0.1
     version: 10.0.1(semantic-release@22.0.5)
-  '@types/babel-core':
-    specifier: ^6.25.8
-    version: 6.25.8
   '@types/node':
     specifier: ^20.8.2
     version: 20.8.2
@@ -2201,6 +2204,15 @@ packages:
       - '@parcel/core'
     dev: true
 
+  /@parcel/packager-ts@2.9.3(@parcel/core@2.9.3):
+    resolution: {integrity: sha512-Vd9dm1FqaFDw/kWCh95zgGS08HvIpSLg5Aa+AIhFiM0G+kpRSItcBSNJVwC7JKmLk1rmQhmQKoCKX26+nvyAzA==}
+    engines: {node: '>= 12.0.0', parcel: ^2.9.3}
+    dependencies:
+      '@parcel/plugin': 2.9.3(@parcel/core@2.9.3)
+    transitivePeerDependencies:
+      - '@parcel/core'
+    dev: true
+
   /@parcel/plugin@2.9.3(@parcel/core@2.9.3):
     resolution: {integrity: sha512-qN85Gqr2GMuxX1dT1mnuO9hOcvlEv1lrYrCxn7CJN2nUhbwcfG+LEvcrCzCOJ6XtIHm+ZBV9h9p7FfoPLvpw+g==}
     engines: {node: '>= 12.0.0'}
@@ -2471,6 +2483,33 @@ packages:
       semver: 7.5.4
     transitivePeerDependencies:
       - '@parcel/core'
+    dev: true
+
+  /@parcel/transformer-typescript-types@2.9.3(@parcel/core@2.9.3)(typescript@5.2.2):
+    resolution: {integrity: sha512-W+Ze3aUTdZuBQokXlkEQ/1hUApUm6VRyYzPqEs9jcqCqU8mv18i5ZGAz4bMuIJOBprp7M2wt10SJJx/SC1pl1A==}
+    engines: {node: '>= 12.0.0', parcel: ^2.9.3}
+    peerDependencies:
+      typescript: '>=3.0.0'
+    dependencies:
+      '@parcel/diagnostic': 2.9.3
+      '@parcel/plugin': 2.9.3(@parcel/core@2.9.3)
+      '@parcel/source-map': 2.1.1
+      '@parcel/ts-utils': 2.9.3(typescript@5.2.2)
+      '@parcel/utils': 2.9.3
+      nullthrows: 1.1.1
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - '@parcel/core'
+    dev: true
+
+  /@parcel/ts-utils@2.9.3(typescript@5.2.2):
+    resolution: {integrity: sha512-MiQoXFV8I4IWZT/q5yolKN/gnEY5gZfGB2X7W9WHJbRgyjlT/A5cPERXzVBj6mc3/VM1GdZJz76w637GUcQhow==}
+    engines: {node: '>= 12.0.0'}
+    peerDependencies:
+      typescript: '>=3.0.0'
+    dependencies:
+      nullthrows: 1.1.1
+      typescript: 5.2.2
     dev: true
 
   /@parcel/types@2.9.3(@parcel/core@2.9.3):
@@ -2940,39 +2979,6 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: true
 
-  /@types/babel-core@6.25.8:
-    resolution: {integrity: sha512-Gb42qPMsjLALFUcegnqVzrEyr9HNrqRlPdS2CTh+pSlF98vnZAmKCFJ9C+ilP7yTRP5RhAOmXtjvloQqdSNBhQ==}
-    dependencies:
-      '@types/babel-generator': 6.25.6
-      '@types/babel-template': 6.25.3
-      '@types/babel-traverse': 6.25.8
-      '@types/babel-types': 7.0.12
-      '@types/babylon': 6.16.7
-    dev: true
-
-  /@types/babel-generator@6.25.6:
-    resolution: {integrity: sha512-VBituuMj7lMPRkYGWNXuWIMs6T/raddG2lhGaP+75eLjBl5S8AH7/IjHVAq3zK7CtwkyJ9jEkgTQS3DIHOidRQ==}
-    dependencies:
-      '@types/babel-types': 7.0.12
-    dev: true
-
-  /@types/babel-template@6.25.3:
-    resolution: {integrity: sha512-3GHZsBd+LRlLIYsqfc0i/aCBSsFiBKtac7n8QJzdhI8jKBuf+mosS8jZHrOR+GZLsVfI+SbkkxIe6rE3GNZoxA==}
-    dependencies:
-      '@types/babel-types': 7.0.12
-      '@types/babylon': 6.16.7
-    dev: true
-
-  /@types/babel-traverse@6.25.8:
-    resolution: {integrity: sha512-+vl4b0q8pnw9xX92HK8+K9g5VLhJwEQ7KaMJcyRMyw8NJqHLlDW31SDsrL/Xdu0TcbThJfK5FxqpOCWwChQIPQ==}
-    dependencies:
-      '@types/babel-types': 7.0.12
-    dev: true
-
-  /@types/babel-types@7.0.12:
-    resolution: {integrity: sha512-HKFKGgwbKpfvjPuEKveybTYHUTSsbBRS72aLI7Gp1X/egZlgtXzmvCqBrmoFdbsh7U7CsLYFmULNIt7nmS89xw==}
-    dev: true
-
   /@types/babel__core@7.20.2:
     resolution: {integrity: sha512-pNpr1T1xLUc2l3xJKuPtsEky3ybxN3m4fJkknfIpTCTfIZCDW57oAg+EfCgIIp2rvCe0Wn++/FfodDS4YXxBwA==}
     dependencies:
@@ -3000,12 +3006,6 @@ packages:
     resolution: {integrity: sha512-ojlGK1Hsfce93J0+kn3H5R73elidKUaZonirN33GSmgTUMpzI/MIFfSpF3haANe3G1bEBS9/9/QEqwTzwqFsKw==}
     dependencies:
       '@babel/types': 7.23.0
-    dev: true
-
-  /@types/babylon@6.16.7:
-    resolution: {integrity: sha512-8wz9tFZVI35Bnyq5qFQ/+yAVLRuU5xglYKmWSKT2KC+QL3QtbTnBK4LbnATb2J762w/tA2A/3XSQ3WsPlu+3bA==}
-    dependencies:
-      '@types/babel-types': 7.0.12
     dev: true
 
   /@types/graceful-fs@4.1.7:
