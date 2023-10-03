@@ -3,6 +3,6 @@
 src
 .eslintrc.cjs
 .prettierrc.cjs
-jest.config.js
+jest.config.cjs
 decs.d.ts
 tsconfig.json

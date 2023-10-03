@@ -1,7 +1,7 @@
 // Copyright (c) Fensak, LLC.
 // SPDX-License-Identifier: AGPL-3.0-or-later OR BUSL-1.1
 
-import { IHunk, ILineDiff, LineOp } from "./patch_types";
+import { IHunk, ILineDiff, LineOp } from "./patch_types.ts";
 
 /**
  * Parse a unified diff text into a list of hunk objects.
