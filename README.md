@@ -23,6 +23,30 @@ This is the source code for the [Fensak](https://fensak.io) Rules Engine which d
 the Fensak platform.
 
 
+## Using @fensak-io/reng for testing Fensak rules
+
+Refer to the [Testing your rule functions](https://docs.fensak.io/docs/writing-rules/#testing-your-rule-functions)
+section in our [Writing rules scripts guide](https://docs.fensak.io/docs/writing-rules/) for an overview of how to use
+this package for testing rule functions.
+
+
+## Reporting Bugs, Getting Help, Providing Feedback, etc
+
+Please [create a GitHub discussion](https://github.com/orgs/fensak-io/discussions/new/choose) if you want to:
+- report issues with **the hosted Fensak service**
+- get any kind of help, like setting up Fensak, writing custom rules, or using Fensak in general
+- provide product feedback and suggestions
+
+Please [create a GitHub issue](https://github.com/fensak-io/reng/issues/new/choose) to report bugs and issues with
+**the reng library**, including self-hosting and using the functions for testing.
+
+**Do not open an issue to report security issues**. Instead, please review our [Security
+Policy](https://github.com/fensak-io/reng/security/policy).
+
+If you are a paying customer of our GitHub App, and have questions about your account, or have any kind of billing
+releated inquiry, please email [support@fensak.io](mailto:support@fensak.io).
+
+
 ## LICENSE
 
 `SPDX-License-Identifier: AGPL-3.0-or-later OR BUSL-1.1`
