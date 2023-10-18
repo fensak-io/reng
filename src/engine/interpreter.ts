@@ -19,7 +19,10 @@ import { Octokit } from "@octokit/rest";
 import { IChangeSetMetadata, IPatch } from "./patch_types.ts";
 
 // Max time in milliseconds for the user defined rule to run. Any UDR functions that take longer than this will throw an error.
-const maxUDRRuntime = 5000;
+//
+// NOTE
+// We have a 40 ms limit because our deployment platform (Deno Deploy) only allows 50ms of compute.
+const maxUDRRuntime = 40;
 // Sleep every 100 steps to yield to other tasks.
 const maxStepIterationsBeforeSleep = 100;
 const sleepBetweenStepIterations = 100;
