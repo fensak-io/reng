@@ -80,7 +80,9 @@ export interface IPatch {
 /**
  * Represents metadata about the change set that is under evaluation.
  * @property sourceBranch The branch that the change set originates from.
+ * @property targetBranch The branch that the change set is merging into.
  */
 export interface IChangeSetMetadata {
   sourceBranch: string;
+  targetBranch: string;
 }

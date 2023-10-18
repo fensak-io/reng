@@ -70,6 +70,7 @@ export async function patchFromGitHubPullRequest(
   const out: IGitHubPullRequestPatches = {
     metadata: {
       sourceBranch: pullReq.head.ref,
+      targetBranch: pullReq.base.ref,
     },
     patchList: [],
     patchFetchMap: {},

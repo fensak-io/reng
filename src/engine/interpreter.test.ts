@@ -7,6 +7,11 @@ import { PatchOp } from "./patch_types.ts";
 import { runRule, RuleLogMode, RuleLogLevel } from "./interpreter.ts";
 import { compileRuleFn, RuleFnSourceLang } from "./compile.ts";
 
+const nullMeta = {
+  sourceBranch: "foo",
+  targetBranch: "bar",
+};
+
 test("sanity check", async () => {
   const ruleFn = `function main(inp, metadata) {
   return inp.length === 1 && metadata.sourceBranch === "foo";
@@ -24,7 +29,7 @@ test("sanity check", async () => {
         diff: [],
       },
     ],
-    { sourceBranch: "foo" },
+    nullMeta,
   );
   expect(result.approve).toBe(true);
 });
@@ -47,7 +52,7 @@ test("sanity check old version", async () => {
         diff: [],
       },
     ],
-    { sourceBranch: "foo" },
+    nullMeta,
   );
   expect(result.approve).toBe(true);
 });
@@ -70,7 +75,7 @@ test("ES5 minify", async () => {
         diff: [],
       },
     ],
-    { sourceBranch: "foo" },
+    nullMeta,
   );
   expect(result.approve).toBe(true);
 });
@@ -95,7 +100,7 @@ test("ES6 support", async () => {
         diff: [],
       },
     ],
-    { sourceBranch: "foo" },
+    nullMeta,
   );
   expect(result.approve).toBe(true);
 });
@@ -125,7 +130,7 @@ function main(inp: IPatch[], metadata: IChangeSetMetadata) {
         diff: [],
       },
     ],
-    { sourceBranch: "foo" },
+    nullMeta,
   );
   expect(result.approve).toBe(true);
 });
@@ -139,7 +144,7 @@ test("basic logging", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
+  const result = await runRule(ruleFn, [], nullMeta, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -158,7 +163,7 @@ test("logging with multiple objects", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
+  const result = await runRule(ruleFn, [], nullMeta, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -178,7 +183,7 @@ test("logging order", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
+  const result = await runRule(ruleFn, [], nullMeta, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -201,7 +206,7 @@ test("logging warn level", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
+  const result = await runRule(ruleFn, [], nullMeta, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -220,7 +225,7 @@ test("logging error level", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
+  const result = await runRule(ruleFn, [], nullMeta, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -235,7 +240,7 @@ test("main return must be boolean", async () => {
   return "hello world";
 }
 `;
-  await expect(runRule(ruleFn, [], { sourceBranch: "foo" })).rejects.toThrow(
+  await expect(runRule(ruleFn, [], nullMeta)).rejects.toThrow(
     "main function must return boolean",
   );
 });
@@ -246,7 +251,7 @@ test("infinite loop", async () => {
   return "hello world";
 }
 `;
-  await expect(runRule(ruleFn, [], { sourceBranch: "foo" })).rejects.toThrow(
+  await expect(runRule(ruleFn, [], nullMeta)).rejects.toThrow(
     "user defined rule timed out",
   );
 }, 10000);
@@ -277,7 +282,7 @@ test("XMLHTTPRequest not supported", async () => {
           diff: [],
         },
       ],
-      { sourceBranch: "foo" },
+      nullMeta,
     ),
   ).rejects.toThrow("XMLHttpRequest is not defined");
 });
@@ -303,7 +308,7 @@ test("fetch is not supported", async () => {
           diff: [],
         },
       ],
-      { sourceBranch: "foo" },
+      nullMeta,
     ),
   ).rejects.toThrow("fetch is not defined");
 });
@@ -327,7 +332,7 @@ test("process is not supported", async () => {
           diff: [],
         },
       ],
-      { sourceBranch: "foo" },
+      nullMeta,
     ),
   ).rejects.toThrow("process is not defined");
 });
@@ -351,7 +356,7 @@ test("Deno is not supported", async () => {
           diff: [],
         },
       ],
-      { sourceBranch: "foo" },
+      nullMeta,
     ),
   ).rejects.toThrow("Deno is not defined");
 });
