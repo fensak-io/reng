@@ -89,6 +89,8 @@ export interface IRuleResult {
  * @param ruleFn A string containing the definition of a main function that takes in the patch object and returns a bool
  *               indicating if the patch passes the rule (and thus should allow auto-merge).
  * @param patch A list of patch objects to evaluate the rule against.
+ * @param changeSetMetadata Metadata about the change set that is useful for constructing approval rules.
+ * @param opts Optional parameters that configure the behavior of the rule engine.
  * @returns A boolean indicating whether the given patch passes the user defined rule.
  */
 export function runRule(
