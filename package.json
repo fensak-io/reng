@@ -33,6 +33,7 @@
   },
   "scripts": {
     "lint": "eslint .",
+    "fmt": "prettier -w .",
     "test": "jest",
     "build": "parcel build",
     "release": "semantic-release"
