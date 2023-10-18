@@ -9,4 +9,4 @@ module.exports = {
   singleQuote: false,
   bracketSpacing: true,
   bracketSameLine: true,
-}
+};
