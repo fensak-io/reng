@@ -76,3 +76,11 @@ export interface IPatch {
   deletions: number;
   diff: IHunk[];
 }
+
+/**
+ * Represents metadata about the change set that is under evaluation.
+ * @property sourceBranch The branch that the change set originates from.
+ */
+export interface IChangeSetMetadata {
+  sourceBranch: string;
+}

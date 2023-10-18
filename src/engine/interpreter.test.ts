@@ -8,91 +8,130 @@ import { runRule, RuleLogMode, RuleLogLevel } from "./interpreter.ts";
 import { compileRuleFn, RuleFnSourceLang } from "./compile.ts";
 
 test("sanity check", async () => {
+  const ruleFn = `function main(inp, metadata) {
+  return inp.length === 1 && metadata.sourceBranch === "foo";
+}
+`;
+  const result = await runRule(
+    ruleFn,
+    [
+      {
+        contentsID: "helloworld",
+        path: "foo.txt",
+        op: PatchOp.Insert,
+        additions: 0,
+        deletions: 0,
+        diff: [],
+      },
+    ],
+    { sourceBranch: "foo" },
+  );
+  expect(result.approve).toBe(true);
+});
+
+// Check that the old rules that don't accept changeSetMetadata still works
+test("sanity check old version", async () => {
   const ruleFn = `function main(inp) {
   return inp.length === 1;
 }
 `;
-  const result = await runRule(ruleFn, [
-    {
-      contentsID: "helloworld",
-      path: "foo.txt",
-      op: PatchOp.Insert,
-      additions: 0,
-      deletions: 0,
-      diff: [],
-    },
-  ]);
+  const result = await runRule(
+    ruleFn,
+    [
+      {
+        contentsID: "helloworld",
+        path: "foo.txt",
+        op: PatchOp.Insert,
+        additions: 0,
+        deletions: 0,
+        diff: [],
+      },
+    ],
+    { sourceBranch: "foo" },
+  );
   expect(result.approve).toBe(true);
 });
 
 test("ES5 minify", async () => {
-  const rawRuleFn = `function main(inp) {
-  return inp.length === 1;
+  const rawRuleFn = `function main(inp, metadata) {
+  return inp.length === 1 && metadata.sourceBranch === "foo";
 }
 `;
   const ruleFn = compileRuleFn(rawRuleFn, RuleFnSourceLang.ES5);
-  const result = await runRule(ruleFn, [
-    {
-      contentsID: "helloworld",
-      path: "foo.txt",
-      op: PatchOp.Insert,
-      additions: 0,
-      deletions: 0,
-      diff: [],
-    },
-  ]);
+  const result = await runRule(
+    ruleFn,
+    [
+      {
+        contentsID: "helloworld",
+        path: "foo.txt",
+        op: PatchOp.Insert,
+        additions: 0,
+        deletions: 0,
+        diff: [],
+      },
+    ],
+    { sourceBranch: "foo" },
+  );
   expect(result.approve).toBe(true);
 });
 
 test("ES6 support", async () => {
-  const rawRuleFn = `function main(inp) {
+  const rawRuleFn = `function main(inp, metadata) {
   const l = inp.length;
-  return l === 1;
+  return l === 1 && metadata.sourceBranch === "foo";
 }
 `;
 
   const ruleFn = compileRuleFn(rawRuleFn, RuleFnSourceLang.ES6);
-  const result = await runRule(ruleFn, [
-    {
-      contentsID: "helloworld",
-      path: "foo.txt",
-      op: PatchOp.Insert,
-      additions: 0,
-      deletions: 0,
-      diff: [],
-    },
-  ]);
+  const result = await runRule(
+    ruleFn,
+    [
+      {
+        contentsID: "helloworld",
+        path: "foo.txt",
+        op: PatchOp.Insert,
+        additions: 0,
+        deletions: 0,
+        diff: [],
+      },
+    ],
+    { sourceBranch: "foo" },
+  );
   expect(result.approve).toBe(true);
 });
 
 test("TS support", async () => {
   const rawRuleFn = `
 // fensak remove-start
-import type { IPatch } from "@fensak-io/fensak-patch-types";
+import type { IPatch, IChangeSetMetadata } from "@fensak-io/reng";
 // fensak remove-end
 
-function main(inp: IPatch[]) {
+function main(inp: IPatch[], metadata: IChangeSetMetadata) {
   const l: number = inp.length;
-  return l === 1;
+  return l === 1 && metadata.sourceBranch === "foo";
 }
 `;
 
   const ruleFn = compileRuleFn(rawRuleFn, RuleFnSourceLang.Typescript);
-  const result = await runRule(ruleFn, [
-    {
-      contentsID: "helloworld",
-      path: "foo.txt",
-      op: PatchOp.Insert,
-      additions: 0,
-      deletions: 0,
-      diff: [],
-    },
-  ]);
+  const result = await runRule(
+    ruleFn,
+    [
+      {
+        contentsID: "helloworld",
+        path: "foo.txt",
+        op: PatchOp.Insert,
+        additions: 0,
+        deletions: 0,
+        diff: [],
+      },
+    ],
+    { sourceBranch: "foo" },
+  );
   expect(result.approve).toBe(true);
 });
 
 test("basic logging", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   console.log("hello world");
   return inp.length === 1;
 }
@@ -100,7 +139,7 @@ test("basic logging", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], opts);
+  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -111,7 +150,7 @@ test("basic logging", async () => {
 });
 
 test("logging with multiple objects", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   console.log("hello", "world");
   return inp.length === 1;
 }
@@ -119,7 +158,7 @@ test("logging with multiple objects", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], opts);
+  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -130,7 +169,7 @@ test("logging with multiple objects", async () => {
 });
 
 test("logging order", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   console.log("hello");
   console.log("world");
   return inp.length === 1;
@@ -139,7 +178,7 @@ test("logging order", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], opts);
+  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -154,7 +193,7 @@ test("logging order", async () => {
 });
 
 test("logging warn level", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   console.warn("hello");
   return inp.length === 1;
 }
@@ -162,7 +201,7 @@ test("logging warn level", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], opts);
+  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -173,7 +212,7 @@ test("logging warn level", async () => {
 });
 
 test("logging error level", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   console.error("hello");
   return inp.length === 1;
 }
@@ -181,7 +220,7 @@ test("logging error level", async () => {
   const opts = {
     logMode: RuleLogMode.Capture,
   };
-  const result = await runRule(ruleFn, [], opts);
+  const result = await runRule(ruleFn, [], { sourceBranch: "foo" }, opts);
   expect(result.approve).toBe(false);
   expect(result.logs).toEqual([
     {
@@ -192,28 +231,28 @@ test("logging error level", async () => {
 });
 
 test("main return must be boolean", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   return "hello world";
 }
 `;
-  await expect(runRule(ruleFn, [])).rejects.toThrow(
+  await expect(runRule(ruleFn, [], { sourceBranch: "foo" })).rejects.toThrow(
     "main function must return boolean",
   );
 });
 
 test("infinite loop", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   while (true) {}
   return "hello world";
 }
 `;
-  await expect(runRule(ruleFn, [])).rejects.toThrow(
+  await expect(runRule(ruleFn, [], { sourceBranch: "foo" })).rejects.toThrow(
     "user defined rule timed out",
   );
 }, 10000);
 
 test("XMLHTTPRequest not supported", async () => {
-  const ruleFn = `function main(inp) {
+  const ruleFn = `function main(inp, metadata) {
   var req = new XMLHttpRequest();
   req.addEventListener("readystatechange", function() {
     if (req.readyState === 4 && req.status === 200) {
@@ -226,16 +265,20 @@ test("XMLHTTPRequest not supported", async () => {
 }`;
 
   await expect(
-    runRule(ruleFn, [
-      {
-        contentsID: "http://example.com/example.txt",
-        path: "foo.txt",
-        op: PatchOp.Insert,
-        additions: 0,
-        deletions: 0,
-        diff: [],
-      },
-    ]),
+    runRule(
+      ruleFn,
+      [
+        {
+          contentsID: "http://example.com/example.txt",
+          path: "foo.txt",
+          op: PatchOp.Insert,
+          additions: 0,
+          deletions: 0,
+          diff: [],
+        },
+      ],
+      { sourceBranch: "foo" },
+    ),
   ).rejects.toThrow("XMLHttpRequest is not defined");
 });
 
@@ -248,16 +291,20 @@ test("fetch is not supported", async () => {
 }`;
 
   await expect(
-    runRule(ruleFn, [
-      {
-        contentsID: "http://example.com/example.txt",
-        path: "foo.txt",
-        op: PatchOp.Insert,
-        additions: 0,
-        deletions: 0,
-        diff: [],
-      },
-    ]),
+    runRule(
+      ruleFn,
+      [
+        {
+          contentsID: "http://example.com/example.txt",
+          path: "foo.txt",
+          op: PatchOp.Insert,
+          additions: 0,
+          deletions: 0,
+          diff: [],
+        },
+      ],
+      { sourceBranch: "foo" },
+    ),
   ).rejects.toThrow("fetch is not defined");
 });
 
@@ -268,16 +315,20 @@ test("process is not supported", async () => {
 }`;
 
   await expect(
-    runRule(ruleFn, [
-      {
-        contentsID: "helloworld",
-        path: "foo.txt",
-        op: PatchOp.Insert,
-        additions: 0,
-        deletions: 0,
-        diff: [],
-      },
-    ]),
+    runRule(
+      ruleFn,
+      [
+        {
+          contentsID: "helloworld",
+          path: "foo.txt",
+          op: PatchOp.Insert,
+          additions: 0,
+          deletions: 0,
+          diff: [],
+        },
+      ],
+      { sourceBranch: "foo" },
+    ),
   ).rejects.toThrow("process is not defined");
 });
 
@@ -288,15 +339,19 @@ test("Deno is not supported", async () => {
 }`;
 
   await expect(
-    runRule(ruleFn, [
-      {
-        contentsID: "helloworld",
-        path: "foo.txt",
-        op: PatchOp.Insert,
-        additions: 0,
-        deletions: 0,
-        diff: [],
-      },
-    ]),
+    runRule(
+      ruleFn,
+      [
+        {
+          contentsID: "helloworld",
+          path: "foo.txt",
+          op: PatchOp.Insert,
+          additions: 0,
+          deletions: 0,
+          diff: [],
+        },
+      ],
+      { sourceBranch: "foo" },
+    ),
   ).rejects.toThrow("Deno is not defined");
 });

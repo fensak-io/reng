@@ -6,7 +6,7 @@ import * as nodecrypto from "crypto";
 import { Octokit } from "@octokit/rest";
 
 import { parseUnifiedDiff } from "./patch.ts";
-import { IPatch, PatchOp } from "./patch_types.ts";
+import { IChangeSetMetadata, IPatch, PatchOp } from "./patch_types.ts";
 import { SourcePlatform } from "./from.ts";
 
 const crypto = nodecrypto.webcrypto;
@@ -29,6 +29,7 @@ export interface IGitHubRepository {
  *                         the sha256 hash of the URL with a random salt.
  */
 export interface IGitHubPullRequestPatches {
+  metadata: IChangeSetMetadata;
   patchList: IPatch[];
   patchFetchMap: Record<string, URL>;
 }
@@ -46,6 +47,12 @@ export async function patchFromGitHubPullRequest(
   repo: IGitHubRepository,
   prNum: number,
 ): Promise<IGitHubPullRequestPatches> {
+  const { data: pullReq } = await clt.pulls.get({
+    owner: repo.owner,
+    repo: repo.name,
+    pull_number: prNum,
+  });
+
   const iter = clt.paginate.iterator(clt.pulls.listFiles, {
     owner: repo.owner,
     repo: repo.name,
@@ -61,6 +68,9 @@ export async function patchFromGitHubPullRequest(
   const fetchMapSalt = hexEncode(a);
 
   const out: IGitHubPullRequestPatches = {
+    metadata: {
+      sourceBranch: pullReq.head.ref,
+    },
     patchList: [],
     patchFetchMap: {},
   };

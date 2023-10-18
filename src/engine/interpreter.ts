@@ -16,7 +16,7 @@ globalThis.acorn = acorn;
 
 import { Octokit } from "@octokit/rest";
 
-import { IPatch } from "./patch_types.ts";
+import { IChangeSetMetadata, IPatch } from "./patch_types.ts";
 
 // Max time in milliseconds for the user defined rule to run. Any UDR functions that take longer than this will throw an error.
 const maxUDRRuntime = 5000;
@@ -94,12 +94,13 @@ export interface IRuleResult {
 export function runRule(
   ruleFn: string,
   patchList: IPatch[],
+  changeSetMetadata: IChangeSetMetadata,
   // TODO: add support for fetching the contents of files
   opts?: IRuleInterpreterOpts,
 ): Promise<IRuleResult> {
   const code = `${ruleFn}
 var inp = JSON.parse(getInput());
-var out = main(inp);
+var out = main(inp.patches, inp.metadata);
 if (typeof out !== "boolean") {
   throw new Error("main function must return boolean (returned " + out + ")");
 }
@@ -221,7 +222,10 @@ setOutput(JSON.stringify(out));
         scope,
         "getInput",
         interpreter.createNativeFunction((): string => {
-          return JSON.stringify(patchList);
+          return JSON.stringify({
+            patches: patchList,
+            metadata: changeSetMetadata,
+          });
         }),
       );
       interpreter.setProperty(
