@@ -39,9 +39,9 @@
     "release": "semantic-release"
   },
   "dependencies": {
-    "@babel/core": "^7.23.0",
+    "@babel/core": "^7.23.2",
     "@babel/preset-env": "^7.22.20",
-    "@babel/preset-typescript": "^7.23.0",
+    "@babel/preset-typescript": "^7.23.2",
     "@octokit/rest": "^20.0.2",
     "babel-preset-minify": "^0.5.2"
   },
