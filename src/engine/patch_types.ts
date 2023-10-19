@@ -78,11 +78,35 @@ export interface IPatch {
 }
 
 /**
+ * Represents another PR that this PR is linked to. A linked PR can be used to represent a dependency where the upstream PR needs to be merged before this PR should be merged.
+ * @property repo The name of the repository (in the same organization) where the linked PR is located. Blank if the
+ *                same repo.
+ * @property prNum The PR number of the linked PR.
+ * @property isMerged Whether the linked PR has been merged.
+ * @property isClosed Whether the linked PR has been closed. Note that a merged PR is also closed.
+ */
+export interface ILinkedPR {
+  repo: string;
+  prNum: number;
+  isMerged: boolean;
+  isClosed: boolean;
+}
+
+/**
  * Represents metadata about the change set that is under evaluation.
  * @property sourceBranch The branch that the change set originates from.
  * @property targetBranch The branch that the change set is merging into.
+ * @property linkedPRs The list of PRs that this PR is linked to.
  */
 export interface IChangeSetMetadata {
   sourceBranch: string;
   targetBranch: string;
+  linkedPRs: ILinkedPR[];
 }
+
+// A convenient const for test cases to initialize a blank changeset metadata.
+export const emptyChangeSetMetadata: IChangeSetMetadata = {
+  sourceBranch: "",
+  targetBranch: "",
+  linkedPRs: [],
+};

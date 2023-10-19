@@ -10,6 +10,7 @@ import { compileRuleFn, RuleFnSourceLang } from "./compile.ts";
 const nullMeta = {
   sourceBranch: "foo",
   targetBranch: "bar",
+  linkedPRs: [],
 };
 
 test("sanity check", async () => {
