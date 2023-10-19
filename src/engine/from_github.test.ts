@@ -198,3 +198,113 @@ test("multiple file changes from GitHub is parsed correctly", async () => {
     },
   ]);
 });
+
+test("extracts linked PRs in front matter", async () => {
+  // View PR at
+  // https://github.com/fensak-test/test-fensak-rules-engine/pull/39
+  const patches = await patchFromGitHubPullRequest(octokit, testRepo, 39);
+  expect(patches.metadata).toEqual({
+    sourceBranch: "test/one-linked",
+    targetBranch: "main",
+    linkedPRs: [
+      {
+        repo: "",
+        prNum: 1,
+        isMerged: false,
+        isClosed: false,
+      },
+    ],
+  });
+});
+
+test("extracts closed linked PRs in front matter", async () => {
+  // View PR at
+  // https://github.com/fensak-test/test-fensak-rules-engine/pull/40
+  const patches = await patchFromGitHubPullRequest(octokit, testRepo, 40);
+  expect(patches.metadata).toEqual({
+    sourceBranch: "test/one-linked-closed",
+    targetBranch: "main",
+    linkedPRs: [
+      {
+        repo: "",
+        prNum: 38,
+        isMerged: false,
+        isClosed: true,
+      },
+    ],
+  });
+});
+
+test("extracts merged linked PRs in front matter", async () => {
+  // View PR at
+  // https://github.com/fensak-test/test-fensak-rules-engine/pull/42
+  const patches = await patchFromGitHubPullRequest(octokit, testRepo, 42);
+  expect(patches.metadata).toEqual({
+    sourceBranch: "test/one-linked-merged",
+    targetBranch: "main",
+    linkedPRs: [
+      {
+        repo: "",
+        prNum: 41,
+        isMerged: true,
+        isClosed: true,
+      },
+    ],
+  });
+});
+
+test("extracts external linked PRs in front matter", async () => {
+  // View PR at
+  // https://github.com/fensak-test/test-fensak-rules-engine/pull/44
+  const patches = await patchFromGitHubPullRequest(octokit, testRepo, 44);
+  expect(patches.metadata).toEqual({
+    sourceBranch: "test/external-linked",
+    targetBranch: "main",
+    linkedPRs: [
+      {
+        repo: "terraform-null-testfensak",
+        prNum: 1,
+        isMerged: false,
+        isClosed: true,
+      },
+    ],
+  });
+});
+
+test("extracts multiple linked PRs in front matter", async () => {
+  // View PR at
+  // https://github.com/fensak-test/test-fensak-rules-engine/pull/43
+  const patches = await patchFromGitHubPullRequest(octokit, testRepo, 43);
+  expect(patches.metadata).toEqual({
+    sourceBranch: "test/multiple-linked",
+    targetBranch: "main",
+    linkedPRs: [
+      {
+        repo: "",
+        prNum: 1,
+        isMerged: false,
+        isClosed: false,
+      },
+      {
+        repo: "",
+        prNum: 38,
+        isMerged: false,
+        isClosed: true,
+      },
+      {
+        repo: "",
+        prNum: 41,
+        isMerged: true,
+        isClosed: true,
+      },
+    ],
+  });
+});
+
+test("errors with bad front matter", async () => {
+  // View PR at
+  // https://github.com/fensak-test/test-fensak-rules-engine/pull/45
+  expect(
+    async () => await patchFromGitHubPullRequest(octokit, testRepo, 45),
+  ).rejects.toThrow(TypeError);
+});
