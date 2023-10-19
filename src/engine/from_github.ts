@@ -80,7 +80,13 @@ export async function patchFromGitHubPullRequest(
     metadata: {
       sourceBranch: pullReq.head.ref,
       targetBranch: pullReq.base.ref,
-      linkedPRs: extractLinkedPRs(pullReq.body),
+      linkedPRs: await extractLinkedPRs(
+        clt,
+        repo.owner,
+        repo.name,
+        prNum,
+        pullReq.body,
+      ),
     },
     patchList: [],
     patchFetchMap: {},
@@ -162,18 +168,61 @@ async function getGitHubPRFileID(salt: string, url: URL): Promise<string> {
   return hexEncode(new Uint8Array(digest));
 }
 
-function extractLinkedPRs(prDescription: string | null): ILinkedPR[] {
-  if (!prDescription || !hasParsableFrontMatter(prDescription)) {
-    return [];
+async function extractLinkedPRs(
+  clt: Octokit,
+  owner: string,
+  repo: string,
+  prNum: number,
+  prDescription: string | null,
+): Promise<ILinkedPR[]> {
+  interface IFrontMatterLinkedPR {
+    repo?: string;
+    prNum: number;
   }
 
   interface IExpectedFrontMatter {
     fensak: {
-      linked: ILinkedPR[];
+      linked: IFrontMatterLinkedPR[];
     };
   }
+
+  if (!prDescription || !hasParsableFrontMatter(prDescription)) {
+    return [];
+  }
+
   const fm = extractFrontMatter<IExpectedFrontMatter>(prDescription);
-  return fm.attrs.fensak.linked;
+  if (!fm.attrs.fensak) {
+    return [];
+  }
+  if (!fm.attrs.fensak.linked) {
+    throw new TypeError(
+      `PR ${owner}/${repo}#${prNum} has front matter, but it is not in the expected format`,
+    );
+  }
+
+  const out: ILinkedPR[] = await Promise.all(
+    fm.attrs.fensak.linked.map(async (l): Promise<ILinkedPR> => {
+      let outR = "";
+      let r = repo;
+      if (l.repo) {
+        outR = l.repo;
+        r = l.repo;
+      }
+      const { data: pullReq } = await clt.pulls.get({
+        owner: owner,
+        repo: r,
+        pull_number: l.prNum,
+      });
+
+      return {
+        repo: outR,
+        prNum: l.prNum,
+        isMerged: pullReq.merged,
+        isClosed: pullReq.state === "closed",
+      };
+    }),
+  );
+  return out;
 }
 
 function hexEncode(hb: Uint8Array): string {
