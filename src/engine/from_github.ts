@@ -4,9 +4,18 @@
 import * as nodecrypto from "crypto";
 
 import { Octokit } from "@octokit/rest";
+import {
+  hasParsableFrontMatter,
+  extract as extractFrontMatter,
+} from "@fensak-io/front-matter";
 
 import { parseUnifiedDiff } from "./patch.ts";
-import { IChangeSetMetadata, IPatch, PatchOp } from "./patch_types.ts";
+import {
+  ILinkedPR,
+  IChangeSetMetadata,
+  IPatch,
+  PatchOp,
+} from "./patch_types.ts";
 import { SourcePlatform } from "./from.ts";
 
 const crypto = nodecrypto.webcrypto;
@@ -71,6 +80,7 @@ export async function patchFromGitHubPullRequest(
     metadata: {
       sourceBranch: pullReq.head.ref,
       targetBranch: pullReq.base.ref,
+      linkedPRs: extractLinkedPRs(pullReq.body),
     },
     patchList: [],
     patchFetchMap: {},
@@ -150,6 +160,20 @@ async function getGitHubPRFileID(salt: string, url: URL): Promise<string> {
     new TextEncoder().encode(toHash),
   );
   return hexEncode(new Uint8Array(digest));
+}
+
+function extractLinkedPRs(prDescription: string | null): ILinkedPR[] {
+  if (!prDescription || !hasParsableFrontMatter(prDescription)) {
+    return [];
+  }
+
+  interface IExpectedFrontMatter {
+    fensak: {
+      linked: ILinkedPR[];
+    };
+  }
+  const fm = extractFrontMatter<IExpectedFrontMatter>(prDescription);
+  return fm.attrs.fensak.linked;
 }
 
 function hexEncode(hb: Uint8Array): string {
