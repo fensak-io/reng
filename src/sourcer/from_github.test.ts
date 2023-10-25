@@ -1,11 +1,12 @@
 import { expect, test } from "@jest/globals";
 import { Octokit } from "@octokit/rest";
 
+import { IPatch, PatchOp, LineOp } from "../engine/patch_types.ts";
+
 import {
   IGitHubRepository,
   patchFromGitHubPullRequest,
 } from "./from_github.ts";
-import { IPatch, PatchOp, LineOp } from "./patch_types.ts";
 
 const maybeToken = process.env.GITHUB_TOKEN;
 let octokit: Octokit;
