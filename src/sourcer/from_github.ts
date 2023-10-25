@@ -9,13 +9,14 @@ import {
   extract as extractFrontMatter,
 } from "@fensak-io/front-matter";
 
-import { parseUnifiedDiff } from "./patch.ts";
+import { parseUnifiedDiff } from "../engine/patch.ts";
 import {
   ILinkedPR,
   IChangeSetMetadata,
   IPatch,
   PatchOp,
-} from "./patch_types.ts";
+} from "../engine/patch_types.ts";
+
 import { SourcePlatform } from "./from.ts";
 
 const crypto = nodecrypto.webcrypto;
