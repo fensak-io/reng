@@ -1,7 +1,7 @@
 import { expect, test } from "@jest/globals";
 import { Octokit } from "@octokit/rest";
 
-import { IPatch, PatchOp, LineOp } from "../engine/patch_types.ts";
+import { IPatch, PatchOp, LineOp, IObjectDiff } from "../engine/patch_types.ts";
 
 import {
   IGitHubRepository,
@@ -31,11 +31,13 @@ test("a single file change from GitHub is parsed correctly", async () => {
   });
   expect(patches.patchList.length).toEqual(1);
 
+  // Check top level patch
   const patch = patches.patchList[0];
   expect(patch.path).toEqual("appversions.json");
   expect(patch.op).toEqual(PatchOp.Modified);
   expect(patch.diff.length).toEqual(1);
 
+  // Check patch hunks
   const hunk = patch.diff[0];
   expect(hunk.originalStart).toEqual(1);
   expect(hunk.originalLength).toEqual(5);
@@ -66,6 +68,29 @@ test("a single file change from GitHub is parsed correctly", async () => {
       op: LineOp.Untouched,
       text: "}",
       newText: "",
+    },
+  ]);
+
+  // Check object diffs
+  const maybeObjDiff = patch.objectDiff;
+  expect(maybeObjDiff).not.toBeNull();
+  const objDiff = maybeObjDiff as IObjectDiff;
+  expect(objDiff.previous).toEqual({
+    coreapp: "v0.1.0",
+    subapp: "v1.1.0",
+    logapp: "v100.1.0",
+  });
+  expect(objDiff.current).toEqual({
+    coreapp: "v0.1.0",
+    subapp: "v1.2.0",
+    logapp: "v100.1.0",
+  });
+  expect(objDiff.diff).toEqual([
+    {
+      type: "CHANGE",
+      path: ["subapp"],
+      value: "v1.2.0",
+      oldValue: "v1.1.0",
     },
   ]);
 });
@@ -146,6 +171,29 @@ test("multiple file changes from GitHub is parsed correctly", async () => {
       newText: "",
     },
   ]);
+  const maybeJSONObjDiff = jsonPatch.objectDiff;
+  expect(maybeJSONObjDiff).not.toBeNull();
+  const jsonObjDiff = maybeJSONObjDiff as IObjectDiff;
+  expect(jsonObjDiff).toEqual({
+    previous: {
+      coreapp: "v0.1.0",
+      subapp: "v1.1.0",
+      logapp: "v100.1.0",
+    },
+    current: {
+      coreapp: "v0.1.0",
+      subapp: "v1.2.0",
+      logapp: "v100.1.0",
+    },
+    diff: [
+      {
+        type: "CHANGE",
+        path: ["subapp"],
+        value: "v1.2.0",
+        oldValue: "v1.1.0",
+      },
+    ],
+  });
 
   // Check tfvars patch
   expect(tfvarsPatch.op).toEqual(PatchOp.Modified);
@@ -172,6 +220,7 @@ test("multiple file changes from GitHub is parsed correctly", async () => {
       newText: "",
     },
   ]);
+  expect(tfvarsPatch.objectDiff).toBeNull();
 
   // Check toml patch
   expect(tomlPatch.op).toEqual(PatchOp.Modified);
@@ -198,6 +247,29 @@ test("multiple file changes from GitHub is parsed correctly", async () => {
       newText: "",
     },
   ]);
+  const maybeTOMLObjDiff = tomlPatch.objectDiff;
+  expect(maybeTOMLObjDiff).not.toBeNull();
+  const tomlObjDiff = maybeTOMLObjDiff as IObjectDiff;
+  expect(tomlObjDiff).toEqual({
+    previous: {
+      coreapp: "v0.1.0",
+      subapp: "v1.1.0",
+      logapp: "v100.1.0",
+    },
+    current: {
+      coreapp: "v0.2.0",
+      subapp: "v1.1.0",
+      logapp: "v100.1.0",
+    },
+    diff: [
+      {
+        type: "CHANGE",
+        path: ["coreapp"],
+        value: "v0.2.0",
+        oldValue: "v0.1.0",
+      },
+    ],
+  });
 });
 
 test("extracts linked PRs in front matter", async () => {
