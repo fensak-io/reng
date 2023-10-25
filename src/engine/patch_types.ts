@@ -1,6 +1,8 @@
 // Copyright (c) Fensak, LLC.
 // SPDX-License-Identifier: AGPL-3.0-or-later OR BUSL-1.1
 
+import type { Difference } from "microdiff";
+
 /**
  * The operation on a line in a hunk of a patch.
  * @property Unknown Unknown operation.
@@ -66,7 +68,10 @@ export enum PatchOp {
  *                      <SOURCE_PLATFORM>:<CONTENTS_URL_HASH>.
  * @property path The relative path (from the root of the repo) to the file that was updated in the patch.
  * @property op The operation that was done on the file in the patch.
+ * @property additions The number of lines that were added in this patch.
+ * @property deletions The number of lines that were removed in this patch.
  * @property diff The list of diffs, organized into hunks.
+ * @property objectDiff If the file represents a parsable data file (e.g., json, yaml, toml), this will contain the object level diff.
  */
 export interface IPatch {
   contentsID: string;
@@ -75,6 +80,24 @@ export interface IPatch {
   additions: number;
   deletions: number;
   diff: IHunk[];
+  objectDiff: IObjectDiff | null;
+}
+
+/**
+ * Represents a diff of the object representation of a file. The specific diff returns a list of object patches that
+ * contains the keys that were added, removed, or updated. Note that the difference is only populated for updated
+ * objects - if the file was inserted or deleted, then the diff will be empty.
+ * @property previous The object representation of the data in the file before the change.
+ * @property current The object representation of the data in the file after the change.
+ * @property diff The difference across the two objects.
+ */
+export interface IObjectDiff {
+  // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
+  previous: any;
+  // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
+  current: any;
+  // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
+  diff: Difference[];
 }
 
 /**
