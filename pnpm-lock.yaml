@@ -20,9 +20,15 @@ dependencies:
   '@octokit/rest':
     specifier: ^20.0.2
     version: 20.0.2
+  atlassian-jwt:
+    specifier: ^2.0.2
+    version: 2.0.2
   babel-preset-minify:
     specifier: ^0.5.2
     version: 0.5.2
+  jose:
+    specifier: ^5.0.1
+    version: 5.0.1
   json5:
     specifier: ^2.2.3
     version: 2.2.3
@@ -3362,6 +3368,14 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /atlassian-jwt@2.0.2:
+    resolution: {integrity: sha512-HgG2p+gJeEqKREnPynEDy76UoShF01jTYMSe0NlRL2rEqXBNDzJiiCyUP7P2cbxcRmI4OC8g40zJjqftFNJ/4A==}
+    engines: {node: '>= 0.4.0'}
+    dependencies:
+      jsuri: 1.3.1
+      lodash: 4.17.21
+    dev: false
+
   /babel-helper-evaluate-path@0.5.0:
     resolution: {integrity: sha512-mUh0UhS607bGh5wUMAQfOpt2JX2ThXMtppHRdRU1kL7ZLRWIXxoV2UIV1r2cAeeNeU1M5SB5/RSUgUxrK8yOkA==}
     dev: false
@@ -5350,6 +5364,10 @@ packages:
       - ts-node
     dev: true
 
+  /jose@5.0.1:
+    resolution: {integrity: sha512-gRVzy7s3RRdGbXmcTdlOswJOjhwPLx1ijIgAqLY6ktzFpOJxxYn4l0fC2vHaHHi4YBX/5FOL3aY+6W0cvQgpug==}
+    dev: false
+
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -5424,6 +5442,10 @@ packages:
     resolution: {integrity: sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==}
     engines: {'0': node >= 0.2.0}
     dev: true
+
+  /jsuri@1.3.1:
+    resolution: {integrity: sha512-LLdAeqOf88/X0hylAI7oSir6QUsz/8kOW0FcJzzu/SJRfORA/oPHycAOthkNp7eLPlTAbqVDFbqNRHkRVzEA3g==}
+    dev: false
 
   /keyv@4.5.3:
     resolution: {integrity: sha512-QCiSav9WaX1PgETJ+SpNnx2PRRapJ/oRSXM4VO5OGYGSjrxbKPVFVhB3l2OCbLCk329N8qyAtsJjSjvVBWzEug==}
