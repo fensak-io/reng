@@ -67,7 +67,9 @@ export class BitBucket {
     });
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(`BitBucket API Error (${response.status}): ${text}`);
+      throw new Error(
+        `BitBucket API Error on URL ${url} (${response.status}): ${text}`,
+      );
     }
     return response;
   }
@@ -105,7 +107,9 @@ export class BitBucket {
     });
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(`BitBucket API Error (${response.status}): ${text}`);
+      throw new Error(
+        `BitBucket API Error on url ${url} (${response.status}): ${text}`,
+      );
     }
     return response;
   }
