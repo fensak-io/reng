@@ -8,3 +8,4 @@
 
 export * from "./from.ts";
 export * from "./from_github.ts";
+export * from "./from_bitbucket.ts";
