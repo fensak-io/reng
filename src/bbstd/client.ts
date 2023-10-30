@@ -74,15 +74,14 @@ export class BitBucket {
 
   async apiCall(
     path: string,
-    method: "GET" | "POST" | "DELETE" = "GET",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any = {},
+    method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+    data?: atlassianjwt.Params,
   ): Promise<Response> {
     // ensure there's a slash prior to path
     const url = `${this.#baseURL.replace(/\/$/, "")}/${path}`;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let body: any = undefined;
-    if (method === "POST") {
+    if (method === "POST" || method === "PUT") {
       body = JSON.stringify(data);
     }
 
@@ -94,6 +93,7 @@ export class BitBucket {
         this.#securityContext,
         method,
         url,
+        data,
       );
       headers.Authorization = `JWT ${token}`;
     }
@@ -116,13 +116,18 @@ export class BitBucket {
  */
 async function generateSessionToken(
   sctx: BitBucketSecurityContext,
-  method: "GET" | "POST" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "DELETE",
   urlRaw: string,
+  body?: atlassianjwt.Params,
 ): Promise<string> {
-  const req: atlassianjwt.Request = atlassianjwt.fromMethodAndUrl(
-    method,
-    urlRaw,
-  );
+  let req: atlassianjwt.Request;
+  if (body && method === "POST") {
+    req = atlassianjwt.fromMethodAndPathAndBody("post", urlRaw, body);
+  } else if (body && method === "PUT") {
+    req = atlassianjwt.fromMethodAndPathAndBody("put", urlRaw, body);
+  } else {
+    req = atlassianjwt.fromMethodAndUrl(method, urlRaw);
+  }
   const qsh = atlassianjwt.createQueryStringHash(req);
 
   const customClaims = { qsh };
