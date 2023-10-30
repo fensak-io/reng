@@ -1,7 +1,6 @@
 // Copyright (c) Fensak, LLC.
 // SPDX-License-Identifier: AGPL-3.0-or-later OR BUSL-1.1
 
-import * as nodecrypto from "crypto";
 import diff from "microdiff";
 
 import { Octokit } from "@octokit/rest";
@@ -11,19 +10,16 @@ import {
   extract as extractFrontMatter,
 } from "@fensak-io/front-matter";
 
-import { hexEncode, sha256 } from "../xtd/index.ts";
 import { parseUnifiedDiff } from "../engine/patch.ts";
 import {
   ILinkedPR,
-  IChangeSetMetadata,
   IPatch,
   IObjectDiff,
   PatchOp,
 } from "../engine/patch_types.ts";
 
-import { SourcePlatform, objectParserFromFilename } from "./from.ts";
-
-const crypto = nodecrypto.webcrypto;
+import type { Repository, PullRequestPatches } from "./from.ts";
+import { objectParserFromFilename } from "./from.ts";
 
 // A type utility to unpack the element type from an array type
 // See https://stackoverflow.com/questions/43537520/how-do-i-extract-a-type-from-an-array-in-typescript
@@ -35,32 +31,6 @@ type PRFile = EleTypeUnpacked<
 type PullReq =
   Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
 
-// TODO (backward incompatible)
-// Update to use Repository and PullRequestPatches
-
-/**
- * Represents a repository hosted on GitHub.
- * @property owner The owner of the repository.
- * @property name The name of the repository.
- */
-export interface IGitHubRepository {
-  owner: string;
-  name: string;
-}
-
-/**
- * Represents the decoded patches for the Pull Request. This also includes a mapping from patch IDs to the URL to
- * retrieve the file contents.
- * @property patchList The list of file patches that are included in this PR.
- * @property patchFetchMap A mapping from a URL hash to the URL to fetch the contents for the file. The URL hash is
- *                         the sha256 hash of the URL with a random salt.
- */
-export interface IGitHubPullRequestPatches {
-  metadata: IChangeSetMetadata;
-  patchList: IPatch[];
-  patchFetchMap: Record<string, URL>;
-}
-
 /**
  * Pull in the changes contained in the Pull Request and create an IPatch array and a mapping from PR file IDs to the
  * URL to fetch the contents.
@@ -71,9 +41,9 @@ export interface IGitHubPullRequestPatches {
  */
 export async function patchFromGitHubPullRequest(
   clt: Octokit,
-  repo: IGitHubRepository,
+  repo: Repository,
   prNum: number,
-): Promise<IGitHubPullRequestPatches> {
+): Promise<PullRequestPatches> {
   const { data: pullReq } = await clt.pulls.get({
     owner: repo.owner,
     repo: repo.name,
@@ -90,11 +60,7 @@ export async function patchFromGitHubPullRequest(
     per_page: 100,
   });
 
-  const a = new Uint8Array(8);
-  crypto.getRandomValues(a);
-  const fetchMapSalt = hexEncode(a);
-
-  const out: IGitHubPullRequestPatches = {
+  const out: PullRequestPatches = {
     metadata: {
       sourceBranch: pullReq.head.ref,
       targetBranch: pullReq.base.ref,
@@ -107,17 +73,12 @@ export async function patchFromGitHubPullRequest(
       ),
     },
     patchList: [],
-    patchFetchMap: {},
   };
   for await (const { data: prFiles } of iter) {
     for (const f of prFiles) {
-      const fContentsURL = new URL(f.contents_url);
-      const fContentsHash = await sha256(`${fetchMapSalt}:${fContentsURL}`);
-      out.patchFetchMap[fContentsHash] = fContentsURL;
       const patches = await getPatchesFromPRFile(
         clt,
         f,
-        fContentsHash,
         pullReq,
         `${repo.owner}/${repo.name}`,
       );
@@ -130,14 +91,11 @@ export async function patchFromGitHubPullRequest(
 async function getPatchesFromPRFile(
   clt: Octokit,
   f: PRFile,
-  fContentsHash: string,
   pullReq: PullReq,
 
   // The following is only needed for error messaging
   repoName: string,
 ): Promise<IPatch[]> {
-  const fid = `${SourcePlatform.GitHub}:${fContentsHash}`;
-
   let op = PatchOp.Unknown;
   switch (f.status) {
     // This should never happen, so we throw an error
@@ -156,7 +114,6 @@ async function getPatchesFromPRFile(
       }
       return [
         {
-          contentsID: fid,
           path: f.previous_filename,
           op: PatchOp.Delete,
           // TODO: this requires pulling down the file contents
@@ -166,7 +123,6 @@ async function getPatchesFromPRFile(
           objectDiff: null,
         },
         {
-          contentsID: fid,
           path: f.filename,
           op: PatchOp.Insert,
           // TODO: this requires pulling down the file contents
@@ -194,7 +150,6 @@ async function getPatchesFromPRFile(
 
   return [
     {
-      contentsID: fid,
       path: f.filename,
       op: op,
       additions: f.additions,

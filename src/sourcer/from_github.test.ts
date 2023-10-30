@@ -6,10 +6,8 @@ import { Octokit } from "@octokit/rest";
 
 import { IPatch, PatchOp, LineOp, IObjectDiff } from "../engine/patch_types.ts";
 
-import {
-  IGitHubRepository,
-  patchFromGitHubPullRequest,
-} from "./from_github.ts";
+import { patchFromGitHubPullRequest } from "./from_github.ts";
+import type { Repository } from "./from.ts";
 
 const maybeToken = process.env.GITHUB_TOKEN;
 let octokit: Octokit;
@@ -18,7 +16,7 @@ if (maybeToken) {
 } else {
   octokit = new Octokit();
 }
-const testRepo: IGitHubRepository = {
+const testRepo: Repository = {
   owner: "fensak-test",
   name: "test-fensak-rules-engine",
 };

@@ -22,7 +22,6 @@ test("sanity check", async () => {
     ruleFn,
     [
       {
-        contentsID: "helloworld",
         path: "foo.txt",
         op: PatchOp.Insert,
         additions: 0,
@@ -46,7 +45,6 @@ test("sanity check old version", async () => {
     ruleFn,
     [
       {
-        contentsID: "helloworld",
         path: "foo.txt",
         op: PatchOp.Insert,
         additions: 0,
@@ -70,7 +68,6 @@ test("ES5 minify", async () => {
     ruleFn,
     [
       {
-        contentsID: "helloworld",
         path: "foo.txt",
         op: PatchOp.Insert,
         additions: 0,
@@ -96,7 +93,6 @@ test("ES6 support", async () => {
     ruleFn,
     [
       {
-        contentsID: "helloworld",
         path: "foo.txt",
         op: PatchOp.Insert,
         additions: 0,
@@ -127,7 +123,6 @@ function main(inp: IPatch[], metadata: IChangeSetMetadata) {
     ruleFn,
     [
       {
-        contentsID: "helloworld",
         path: "foo.txt",
         op: PatchOp.Insert,
         additions: 0,
@@ -280,7 +275,6 @@ test("XMLHTTPRequest not supported", async () => {
       ruleFn,
       [
         {
-          contentsID: "http://example.com/example.txt",
           path: "foo.txt",
           op: PatchOp.Insert,
           additions: 0,
@@ -307,7 +301,6 @@ test("fetch is not supported", async () => {
       ruleFn,
       [
         {
-          contentsID: "http://example.com/example.txt",
           path: "foo.txt",
           op: PatchOp.Insert,
           additions: 0,
@@ -332,7 +325,6 @@ test("process is not supported", async () => {
       ruleFn,
       [
         {
-          contentsID: "helloworld",
           path: "foo.txt",
           op: PatchOp.Insert,
           additions: 0,
@@ -357,7 +349,6 @@ test("Deno is not supported", async () => {
       ruleFn,
       [
         {
-          contentsID: "helloworld",
           path: "foo.txt",
           op: PatchOp.Insert,
           additions: 0,

@@ -17,15 +17,13 @@ import {
   PatchOp,
 } from "../engine/patch_types.ts";
 
-import { SourcePlatform, objectParserFromFilename } from "./from.ts";
+import { objectParserFromFilename } from "./from.ts";
 import type { Repository, PullRequestPatches } from "./from.ts";
 
 type IBBFileDiff = {
   unifiedTxt: string;
   oFname: string;
-  oFhash: string;
   tFname: string;
-  tFhash: string;
 };
 
 /**
@@ -59,9 +57,6 @@ export async function patchFromBitBucketPullRequest(
       ),
     },
     patchList: [],
-    // TODO (backward incompatible)
-    // This will be removed in the next backward incompatible update since it's not implemented
-    patchFetchMap: {},
   };
 
   const prDiffResp = await clt.directAPICall(pullReq.links.diff.href);
@@ -161,7 +156,6 @@ async function parseBitBucketDiff(
   const out: IPatch[] = [];
 
   const diffStartLineRE = /^diff --git a\/.+ b\/.+$/;
-  const indexLineRE = /^index ([0-9a-f]+)\.\.([0-9a-f]+) \d{6}$/;
   const ofnameRE = /^--- ((a\/(.+))|(\/dev\/null))$/;
   const tfnameRE = /^\+\+\+ ((b\/(.+))|(\/dev\/null))$/;
   let fdiff: IBBFileDiff | null = null;
@@ -181,20 +175,14 @@ async function parseBitBucketDiff(
       fdiff = {
         unifiedTxt: line,
         oFname: "",
-        oFhash: "",
         tFname: "",
-        tFhash: "",
       };
     } else if (fdiff != null) {
       fdiff.unifiedTxt += `\n${line}`;
 
-      const maybeIndex = indexLineRE.exec(line);
       const maybeOFname = ofnameRE.exec(line);
       const maybeTFname = tfnameRE.exec(line);
-      if (maybeIndex) {
-        fdiff.oFhash = maybeIndex[1];
-        fdiff.tFhash = maybeIndex[2];
-      } else if (maybeOFname && maybeOFname[1] !== "/dev/null") {
+      if (maybeOFname && maybeOFname[1] !== "/dev/null") {
         fdiff.oFname = maybeOFname[3];
       } else if (maybeTFname && maybeTFname[1] !== "/dev/null") {
         fdiff.tFname = maybeTFname[3];
@@ -229,7 +217,6 @@ async function parseBitBucketFileDiff(
   const isRename =
     fdiff.oFname && fdiff.tFname && fdiff.oFname !== fdiff.tFname;
   if (isRename) {
-    const fid = `${SourcePlatform.BitBucket}:${fdiff.tFhash}`;
     let objectDiff: IObjectDiff | null = null;
     if (fdiff.unifiedTxt) {
       objectDiff = await getObjectDiff(
@@ -244,7 +231,6 @@ async function parseBitBucketFileDiff(
     }
     return [
       {
-        contentsID: fid,
         path: fdiff.oFname,
         op: PatchOp.Delete,
         diff: [],
@@ -254,7 +240,6 @@ async function parseBitBucketFileDiff(
         deletions: 0,
       },
       {
-        contentsID: fid,
         path: fdiff.tFname,
         op: PatchOp.Insert,
         diff: [],
@@ -264,7 +249,6 @@ async function parseBitBucketFileDiff(
         deletions: 0,
       },
       {
-        contentsID: fid,
         path: fdiff.tFname,
         op: PatchOp.Modified,
         diff,
@@ -280,11 +264,9 @@ async function parseBitBucketFileDiff(
   const isDelete = fdiff.oFname && !fdiff.tFname;
   let op = PatchOp.Modified;
   let path = fdiff.oFname;
-  let fhash = fdiff.oFhash;
   if (isAdd) {
     op = PatchOp.Insert;
     path = fdiff.tFname;
-    fhash = fdiff.tFhash;
   } else if (isDelete) {
     op = PatchOp.Delete;
   }
@@ -300,7 +282,6 @@ async function parseBitBucketFileDiff(
   );
   return [
     {
-      contentsID: `${SourcePlatform.BitBucket}:${fhash}`,
       path,
       op,
       diff,
