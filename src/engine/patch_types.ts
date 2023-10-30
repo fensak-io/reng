@@ -64,8 +64,6 @@ export enum PatchOp {
 
 /**
  * Represents updates to a single file that was done in the change set.
- * @property contentsID A unique ID that can be used to retrieve the file contents. The ID is in the format
- *                      <SOURCE_PLATFORM>:<CONTENTS_URL_HASH>.
  * @property path The relative path (from the root of the repo) to the file that was updated in the patch.
  * @property op The operation that was done on the file in the patch.
  * @property additions The number of lines that were added in this patch.
@@ -74,7 +72,6 @@ export enum PatchOp {
  * @property objectDiff If the file represents a parsable data file (e.g., json, yaml, toml), this will contain the object level diff.
  */
 export interface IPatch {
-  contentsID: string;
   path: string;
   op: PatchOp;
   additions: number;

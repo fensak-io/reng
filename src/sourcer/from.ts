@@ -26,13 +26,10 @@ export type Repository = {
  * Represents the decoded patches for the Pull Request. This also includes a mapping from patch IDs to the URL to
  * retrieve the file contents.
  * @property patchList The list of file patches that are included in this PR.
- * @property patchFetchMap A mapping from a URL hash to the URL to fetch the contents for the file. The URL hash is
- *                         the sha256 hash of the URL with a random salt.
  */
 export type PullRequestPatches = {
   metadata: IChangeSetMetadata;
   patchList: IPatch[];
-  patchFetchMap: Record<string, URL>;
 };
 
 // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any

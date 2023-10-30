@@ -53,13 +53,9 @@ export enum RuleLogMode {
 
 /**
  * Options for the rule interpreter engine.
- * @property fileFetchMap The mapping from source platforms to the URL map for fetching file contents.
- * @property fileFetchClients The authenticated API clients to use for fetching the files.
  * @property logMode The logging mode that the interpreter should operate in.
  */
 export interface IRuleInterpreterOpts {
-  fileFetchMap?: Record<string, Record<string, URL>>;
-  fileFetchClients?: IFileFetchClients;
   logMode?: RuleLogMode;
 }
 
