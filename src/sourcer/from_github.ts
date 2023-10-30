@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later OR BUSL-1.1
 
 import * as nodecrypto from "crypto";
-import YAML from "yaml";
-import toml from "toml";
-import JSON5 from "json5";
 import diff from "microdiff";
 
 import { Octokit } from "@octokit/rest";
@@ -14,6 +11,7 @@ import {
   extract as extractFrontMatter,
 } from "@fensak-io/front-matter";
 
+import { hexEncode, sha256 } from "../xtd/index.ts";
 import { parseUnifiedDiff } from "../engine/patch.ts";
 import {
   ILinkedPR,
@@ -23,7 +21,7 @@ import {
   PatchOp,
 } from "../engine/patch_types.ts";
 
-import { SourcePlatform } from "./from.ts";
+import { SourcePlatform, objectParserFromFilename } from "./from.ts";
 
 const crypto = nodecrypto.webcrypto;
 
@@ -36,6 +34,9 @@ type PRFile = EleTypeUnpacked<
 >;
 type PullReq =
   Endpoints["GET /repos/{owner}/{repo}/pulls/{pull_number}"]["response"]["data"];
+
+// TODO (backward incompatible)
+// Update to use Repository and PullRequestPatches
 
 /**
  * Represents a repository hosted on GitHub.
@@ -111,7 +112,7 @@ export async function patchFromGitHubPullRequest(
   for await (const { data: prFiles } of iter) {
     for (const f of prFiles) {
       const fContentsURL = new URL(f.contents_url);
-      const fContentsHash = await getGitHubPRFileID(fetchMapSalt, fContentsURL);
+      const fContentsHash = await sha256(`${fetchMapSalt}:${fContentsURL}`);
       out.patchFetchMap[fContentsHash] = fContentsURL;
       const patches = await getPatchesFromPRFile(
         clt,
@@ -142,14 +143,16 @@ async function getPatchesFromPRFile(
     // This should never happen, so we throw an error
     default:
       throw new Error(
-        `unknown status for file ${f.filename} in PR ${pullReq.number} of repo ${repoName}: ${f.status}`,
+        `[github] unknown status for file ${f.filename} in PR ${pullReq.number} of repo ${repoName}: ${f.status}`,
       );
 
     // A rename is a delete and then an insert, so special case it
     case "renamed":
       if (!f.previous_filename) {
         // This shouldn't happen because of the way the GitHub API works, so we throw an error.
-        throw new Error("previous filename not available for a rename");
+        throw new Error(
+          "[github] previous filename not available for a rename",
+        );
       }
       return [
         {
@@ -202,15 +205,6 @@ async function getPatchesFromPRFile(
   ];
 }
 
-async function getGitHubPRFileID(salt: string, url: URL): Promise<string> {
-  const toHash = `${salt}:${url}`;
-  const digest = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(toHash),
-  );
-  return hexEncode(new Uint8Array(digest));
-}
-
 async function extractLinkedPRs(
   clt: Octokit,
   owner: string,
@@ -239,7 +233,7 @@ async function extractLinkedPRs(
   }
   if (!fm.attrs.fensak.linked) {
     throw new TypeError(
-      `PR ${owner}/${repo}#${prNum} has front matter, but it is not in the expected format`,
+      `[github] PR ${owner}/${repo}#${prNum} has front matter, but it is not in the expected format`,
     );
   }
 
@@ -288,42 +282,9 @@ async function getObjectDiff(
   op: PatchOp,
   // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
 ): Promise<IObjectDiff | null> {
-  // Get the file extension to determine the file type
-  const m = /(?:\.([^.]+))?$/.exec(f.filename);
-  if (m === null) {
+  const parser = objectParserFromFilename(f.filename);
+  if (parser === null) {
     return null;
-  }
-  const ext = m[1];
-
-  const supportedObjectExtensions = ["json", "json5", "yaml", "yml", "toml"];
-  if (!supportedObjectExtensions.includes(ext)) {
-    return null;
-  }
-
-  // At this point, we know the object can be parsed out of the file so start to pull down the contents.
-  // eslint-disable-next-line no-var,@typescript-eslint/no-explicit-any
-  let parser: (s: string) => any;
-  switch (ext) {
-    default:
-      // Throw error becauset this should never happen given the check for supportedObjectExtensions.
-      throw new Error(`unsupported file extension ${ext} for ${f.filename}`);
-
-    case "json":
-      parser = JSON.parse;
-      break;
-
-    case "json5":
-      parser = JSON5.parse;
-      break;
-
-    case "yaml":
-    case "yml":
-      parser = YAML.parse;
-      break;
-
-    case "toml":
-      parser = toml.parse;
-      break;
   }
 
   switch (op) {
@@ -387,15 +348,7 @@ async function getPRFileContent(
     ref: ref,
   });
   if (Array.isArray(fileRep) || fileRep.type !== "file") {
-    throw new Error(`${f.filename} is not a file`);
+    throw new Error(`[github] ${f.filename} is not a file`);
   }
   return Buffer.from(fileRep.content, "base64").toString();
-}
-
-function hexEncode(hb: Uint8Array): string {
-  const hashArray = Array.from(hb);
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return hashHex;
 }

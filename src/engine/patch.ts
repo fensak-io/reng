@@ -31,7 +31,7 @@ export function parseUnifiedDiff(diffTxt: string): IHunk[] {
         updatedLength: parseInt(cg.updatedLength),
         diffOperations: [],
       };
-    } else if (curHunk != null) {
+    } else if (curHunk != null && line != "") {
       let op: LineOp;
       switch (line[0]) {
         default:
