@@ -1,6 +1,6 @@
 {
   "name": "@fensak-io/reng",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "Fensak, LLC <info@fensak.io> (https://fensak.io)",
   "license": "(AGPL-3.0-or-later OR BUSL-1.1)",
   "description": "Fensak Rules Engine, which drives execution of user defined rules on the Fensak platform.",
